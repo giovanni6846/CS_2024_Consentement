@@ -41,6 +41,7 @@ if (isset($_REQUEST["action"]))
     $action = $_REQUEST["action"];
 else
     $action = "Action_Par_Defaut";
+
 //error_log("action : " . $action);
 //utiliser en débuggage pour avoir le type de connexion
 //$Vue->addToCorps(new Vue_AfficherMessage("<br>Action $action<br>"));
@@ -87,5 +88,19 @@ switch ($typeConnexion) {
                 include "Controleur/Controleur_Catalogue_client.php";
                 break;
         }
+}
+
+switch ($action) {
+    case "AccepterRGPD":
+        include_once "Controleur/Controleur_AccepterRGPD.php";
+        unset($_SESSION);
+        session_destroy();
+        include_once "Controleur/Controleur_visiteur.php";
+        break;
+    case "RefuserRGPD":
+        unset($_SESSION);
+        session_destroy();
+        include_once "Controleur/Controleur_visiteur.php";
+        break;
 }
 $Vue->afficher();

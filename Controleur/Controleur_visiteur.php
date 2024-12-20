@@ -4,6 +4,7 @@ use App\Modele\Modele_Entreprise;
 use App\Modele\Modele_Salarie;
 use App\Modele\Modele_Utilisateur;
 use App\Vue\Vue_Connexion_Formulaire_client;
+use App\Vue\Vue_ConsentementRGPD;
 use App\Vue\Vue_Mail_Confirme;
 use App\Vue\Vue_Mail_ReinitMdp;
 use App\Vue\Vue_Menu_Administration;
@@ -50,8 +51,16 @@ switch ($action) {
                                 break;
                             case 2:
                                 $_SESSION["typeConnexionBack"] = "gestionnaireCatalogue";
-                                $Vue->setMenu(new Vue_Menu_Administration($_SESSION["idCategorie_utilisateur"]));
-                                break;
+                                $rgpd = Modele_Utilisateur::Utilisateur_Select_RGDP($_REQUEST["compte"]);
+                                $rgpd = $rgpd["aAccepteRGPD"];
+                                if ($rgpd == 0){
+                                    $Vue->setMenu(new Vue_ConsentementRGPD());
+                                    break;
+                                }
+                                else{
+                                    $Vue->setMenu(new Vue_Menu_Administration($_SESSION["idCategorie_utilisateur"]));
+                                    break;
+                                }
                             case 3:
                                 $_SESSION["typeConnexionBack"] = "entrepriseCliente";
                                 //error_log("idUtilisateur : " . $_SESSION["idUtilisateur"]);
@@ -62,14 +71,27 @@ switch ($action) {
                                 $_SESSION["typeConnexionBack"] = "salarieEntrepriseCliente";
                                 $_SESSION["idSalarie"] = $utilisateur["idUtilisateur"];
                                 $_SESSION["idEntreprise"] = Modele_Salarie::Salarie_Select_byId($_SESSION["idUtilisateur"])["idEntreprise"];
-                                include "./Controleur/Controleur_Catalogue_client.php";
-                                break;
+                                $rgpd = Modele_Utilisateur::Utilisateur_Select_RGDP($_REQUEST["compte"]);
+                                if ($rgpd == false){
+                                    $Vue->setMenu(new Vue_ConsentementRGPD());
+                                    break;
+                                }else{
+                                    include "./Controleur/Controleur_Catalogue_client.php";
+                                    break;
+                                }
+
                             case 5:
                                 $_SESSION["typeConnexionBack"] = "redacteur";
                                 $_SESSION["idSalarie"] = $utilisateur["idUtilisateur"];
                                 $_SESSION["idEntreprise"] = Modele_Salarie::Salarie_Select_byId($_SESSION["idUtilisateur"])["idEntreprise"];
-                                include "./Controleur/Controleur_Catalogue_client.php";
-                                break;
+                                $rgpd = Modele_Utilisateur::Utilisateur_Select_RGDP($_REQUEST["compte"]);
+                                if ($rgpd == false){
+                                    $Vue->setMenu(new Vue_ConsentementRGPD());
+                                    break;
+                                }else {
+                                    include "./Controleur/Controleur_Catalogue_client.php";
+                                    break;
+                                }
                         }
 
                     } else {//mot de passe pas bon

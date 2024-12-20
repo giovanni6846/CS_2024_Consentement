@@ -70,6 +70,25 @@ class Modele_Utilisateur
         return $utilisateur;
     }
 
+    static function Utilisateur_Select_RGDP($login)
+    {
+        $connexionPDO = Singleton_ConnexionPDO::getInstance();
+        $requetePreparee = $connexionPDO->prepare('select aAccepteRGPD from `utilisateur` where login = :paramLogin');
+        $requetePreparee->bindParam('paramLogin', $login);
+        $reponse = $requetePreparee->execute(); //$reponse boolean sur l'état de la requête
+        $utilisateur = $requetePreparee->fetch(PDO::FETCH_ASSOC);
+        return $utilisateur;
+    }
+
+    static function Utilisateur_Maj_RGPD($login)
+    {
+        $connexionPDO = Singleton_ConnexionPDO::getInstance();
+        $requetePreparee = $connexionPDO->prepare('Update `utilisateur` set aAccepteRGPD = TRUE where idUtilisateur = :paramLogin');
+        $requetePreparee->bindParam('paramLogin', $login);
+        $reponse = $requetePreparee->execute(); //$reponse boolean sur l'état de la requête
+        $utilisateur = $requetePreparee->fetch(PDO::FETCH_ASSOC);
+        return $reponse;
+    }
     /**
      * @param $connexionPDO
      * @param $login
